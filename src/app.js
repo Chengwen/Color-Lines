@@ -20,7 +20,7 @@ var GameScene = cc.Scene.extend({
 	spaceY:72,
 	yOffset:30,
 	MAXLEN:9,
-	gameVersion:2,//1 is wexin,2 is android ,3 is website ,4 is mobile,
+	gameVersion:2,//1 is wexin,2 is android or other
 	onEnter:function () {
 		this._super();
 		this.winsize = cc.director.getWinSize();
@@ -59,7 +59,6 @@ var GameScene = cc.Scene.extend({
 		
 		var menuItem1 = cc.MenuItemImage.create(res.s_replay,res.s_replay,this.replay,this);
 		this.infoMenu = cc.Menu.create(menuItem1); 
-		//this.infoMenu.alignItemsVerticallyWithPadding(40);
 		this.gameLayer.addChild(this.infoMenu,6);
 		this.infoMenu.setPosition(menuItem1.width/2+36,this.winsize.height-200);
 		
@@ -144,7 +143,6 @@ var GameScene = cc.Scene.extend({
 							else {
 								cc.audioEngine.playEffect(res.selected2, false);
 								var selectBall = event.getCurrentTarget().gameLayer.getChildByTag(event.getCurrentTarget().selectPointX*1000+event.getCurrentTarget().selectPointY*100);
-								//先连接移动球动画
 								var moveArray=[];
 								for(var i=0;i<result.length;i++)
 								{
@@ -155,10 +153,8 @@ var GameScene = cc.Scene.extend({
 									);
 
 								}
-								//动画完成后判断球是否需要消失
 								var finish1 = cc.CallFunc.create(event.getCurrentTarget().checkBall, event.getCurrentTarget());
 								moveArray[moveArray.length]=finish1;
-								//然后增加新球.
 								var finish2 = cc.CallFunc.create(event.getCurrentTarget().AIPlay, event.getCurrentTarget());
 								moveArray[moveArray.length]=finish2;
 								
@@ -203,8 +199,6 @@ var GameScene = cc.Scene.extend({
 	},
 	replay : function(){
 		cc.director.runScene(new GameScene());
-		//this.gameLayer.removeAllChildren();
-		//this.initData();
 	},
 	startGame : function(){
 		cc.log("start game");
@@ -272,21 +266,6 @@ var GameScene = cc.Scene.extend({
 	},
 	gameOver:function()
 	{
-
-		//Game Over!
-		/*
-		this.gameover = new cc.LabelTTF("Game Over!\r\nTry it again!", "Arial", 80); 
-		this.gameover.color = cc.color(0, 0, 0);
-		this.gameover.setPosition(this.winsize.width / 2,this.winsize.height);
-		this.gameLayer.addChild(this.gameover,10); 
-		
-
-		var moveArray=[];
-		moveArray[0] = cc.MoveTo.create(1.2,  
-				cc.p(this.winsize.width / 2,this.winsize.height/2));
-
-		this.gameover.runAction(cc.Sequence.create(moveArray));
-*/
 
 		var centerpos = cc.p(this.winsize.width / 2, this.winsize.height / 2);
 	
@@ -378,7 +357,6 @@ var GameScene = cc.Scene.extend({
 		var balllist=[];
 		balllist.push({X:X,Y:Y});
 		
-		//横线
 		if((X>0 && this.map[X-1][Y]==Color)|| X+1<this.MAXLEN &&this.map[X+1][Y]==Color)
 		{
 			for(var left=X-1;left>=0;left--)
@@ -408,7 +386,6 @@ var GameScene = cc.Scene.extend({
 			
 			if(LeftTimes+RightTimes+1>=5)
 			{
-				cc.log("横线是"+(LeftTimes+RightTimes+1)+"个颜色");
 				this.updateScore(balllist);
 				return true;
 			}
@@ -417,7 +394,7 @@ var GameScene = cc.Scene.extend({
 		balllist=[];balllist.push({X:X,Y:Y});
 		LeftTimes=0;
 		RightTimes=0;
-		//竖线
+		
 		if((Y>0 && this.map[X][Y-1]==Color)|| Y+1<this.MAXLEN &&this.map[X][Y+1]==Color)
 		{
 			for(var bottom=Y-1;bottom>=0;bottom--)
@@ -447,7 +424,6 @@ var GameScene = cc.Scene.extend({
 
 			if(BottomTimes+UpTimes+1>=5)
 			{
-				cc.log("竖线是"+(BottomTimes+UpTimes+1)+"个颜色");
 				this.updateScore(balllist);
 				return true;
 			}
@@ -456,9 +432,6 @@ var GameScene = cc.Scene.extend({
 		balllist=[];balllist.push({X:X,Y:Y});
 		LeftTimes=0;
 		RightTimes=0;
-		//左上到右下线
-		//if((X>0 && this.map[X-1][Y]==Color)|| X+1<this.MAXLEN &&this.map[X+1][Y]==Color)
-		{
 			for(var left=X-1,right=Y+1;left>=0 && right<this.MAXLEN;left--,right++)//左上
 			{
 				if( this.map[left][right]==Color)
@@ -486,19 +459,15 @@ var GameScene = cc.Scene.extend({
 
 			if(LeftTimes+RightTimes+1>=5)
 			{
-				cc.log("左上到右下线是"+(LeftTimes+RightTimes+1)+"个颜色");
 				this.updateScore(balllist);
 				return true;
 
 			}
 
-		}
 		balllist=[];balllist.push({X:X,Y:Y});
 		LeftTimes=0;
 		RightTimes=0;
-		//右上到左下线
-		//if((X>0 && this.map[X-1][Y]==Color)|| X+1<this.MAXLEN &&this.map[X+1][Y]==Color)
-		{
+	
 			for(var left=X+1,right=Y+1;left<this.MAXLEN && right<this.MAXLEN;left++,right++)//左上
 			{
 				if( this.map[left][right]==Color)
@@ -526,13 +495,10 @@ var GameScene = cc.Scene.extend({
 
 			if(LeftTimes+RightTimes+1>=5)
 			{
-				cc.log("右上到左下线是"+(LeftTimes+RightTimes+1)+"个颜色");
 				this.updateScore(balllist);
 				return true;
 			}
 
-		}
-		
 		if(balllist.length>=3)
 		{
 		}
@@ -566,7 +532,3 @@ var GameScene = cc.Scene.extend({
 		this.gameLayer.addChild(ballSprite,6);
 	}
 });
-
-
-
-
